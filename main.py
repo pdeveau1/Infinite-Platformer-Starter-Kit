@@ -1,5 +1,7 @@
-import sys, pygame
+import sys, pygame, random
 from pygame.locals import*
+from platforms import*
+from player import*
 
 pygame.init()
 screen_info = pygame.display.Info()
@@ -17,10 +19,38 @@ screen.fill(color)
 #create Sprite groups
 sprite_list = pygame.sprite.Group()
 platforms = pygame.sprite.Group()
+player = ""
+
+def get_player_actions():
+  #creating dictionary of player images
+  p1_actions = {}
+  #adding jump image to dictionary
+  p1_actions["p1_jump"] = pygame.image.load("images/p1_jump.png").convert()
+  #set transparent background
+  p1_actions["p1_jump"].set_colorkey((0,0,0))
+  #adding hurt image to dictionary
+  p1_actions["p1_hurt"] = pygame.image.load("images/p1_hurt.png").convert()
+  #set background to transparent
+  p1_actions["p1_hurt"].set_colorkey((0,0,0))
+  return p1_actions
+
+def init(p1_actions):
+  global player
+  for i in range(height//100):
+    for j in range(width//420):
+      plat = Platforms((random.randint(5, (width-50) // 10)*10,120*i),"images/grassHalf.png",70,40)
+      platforms.add(plat)
+  #create player in the center and above the last platform
+  player = Player((platforms.sprites()[-1].rect.centerx,platforms.sprites()[-1].rect.centery-300),p1_actions)
+  #add player to sprite group
+  sprite_list.add(player)
 
 #create main function
 def main():
+  global player
   game_over = False
+  p1_actions = get_player_actions()
+  init(p1_actions)
   while True:
     #set maximum refresh rate
     clock.tick(60)
